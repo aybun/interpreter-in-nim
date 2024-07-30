@@ -2,52 +2,52 @@ import std/tables
 
 
 const
-  ILLEGAL = "ILLEGAL"
-  EOF     = "EOF"
+  ILLEGAL* = "ILLEGAL"
+  EOF*     = "EOF"
 
 # Identifiers + literals
-  IDENT = "IDENT" # add, foobar, x, y, ...
-  INT   = "INT"   # 1343456
+  IDENT* = "IDENT" # add, foobar, x, y, ...
+  INT*   = "INT"   # 1343456
 
 # Operators
-  PLUS     = "+"
-  MINUS    = "-"
-  BANG     = "!"
-  ASTERISK = "*"
-  SLASH    = "/"
+  PLUS*     = "+"
+  MINUS*    = "-"
+  BANG*   = "!"
+  ASTERISK* = "*"
+  SLASH*    = "/"
 
-  LT = "<"
-  GT = ">"
+  LT* = "<"
+  GT* = ">"
 
-  EQ     = "=="
-  NOT_EQ = "!="
+  EQ*     = "=="
+  NOT_EQ* = "!="
 
 #	 Delimiters
-  COMMA     = ","
-  SEMICOLON = ";"
+  COMMA*     = ","
+  SEMICOLON* = ";"
 
-  LPAREN = "("
-  RPAREN = ")"
-  LBRACE = "{"
-  RBRACE = "}"
+  LPAREN* = "("
+  RPAREN* = ")"
+  LBRACE* = "{"
+  RBRACE* = "}"
 
 #	 Keywords
-  FUNCTION = "FUNCTION"
-  LET      = "LET"
-  TRUE     = "TRUE"
-  FALSE    = "FALSE"
-  IF       = "IF"
-  ELSE     = "ELSE"
-  RETURN   = "RETURN"
+  FUNCTION* = "FUNCTION"
+  LET*      = "LET"
+  TRUE*     = "TRUE"
+  FALSE*    = "FALSE"
+  IF*       = "IF"
+  ELSE*     = "ELSE"
+  RETURN*   = "RETURN"
 
 
 # Tokens
-type TokenType = string
+type TokenType* = string
 
 type
-  Token = object
-    Type: TokenType
-    Literal: string
+  Token* = object
+    Type*: TokenType
+    Literal*: string
 
 var keywords = {
   "fn" : FUNCTION,
