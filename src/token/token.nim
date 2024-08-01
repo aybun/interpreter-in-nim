@@ -10,6 +10,7 @@ const
   INT*   = "INT"   # 1343456
 
 # Operators
+  ASSIGN* = "="
   PLUS*     = "+"
   MINUS*    = "-"
   BANG*   = "!"
@@ -61,9 +62,9 @@ var keywords = {
 }.toTable()
 
 
-proc LookUpIdent(ident :string) =
-  let res_string = keywords.getOrDefault(iden, nil)
-  if res_string != nil:
+proc LookupIdent*(ident :string): string =
+  let res_string = keywords.getOrDefault(ident, "-")
+  if res_string != "-":
     return res_string
   else:
     return ident
