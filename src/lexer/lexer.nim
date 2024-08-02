@@ -13,10 +13,14 @@ type
 # Define before use.
 proc peekChar(l : var Lexer): byte
 proc newToken(tokenType :token.TokenType, ch :byte): token.Token
+proc isLetter(b :byte): bool
+proc isDigit(b :byte): bool
+proc readChar(l : var Lexer): void
+proc readIdentifier(l : var Lexer): string
+proc readNumber(l : var Lexer): string
 
-proc New(input :string): Lexer =
+proc New*(input :string): Lexer =
   return Lexer(input: input)
-
 
 proc readChar(l : var Lexer): void =
   if l.readPosition >= len(l.input):
@@ -31,7 +35,8 @@ proc skipWhitespace(l : var Lexer): void =
   while (ch_char == ' ' or ch_char == '\t' or ch_char == '\n' or ch_char == '\r'):
     l.readChar()
     ch_char = chr(l.ch)
-proc nextToken(l : var Lexer): token.Token =
+
+proc nextToken*(l : var Lexer): token.Token =
   var tok : token.Token
   l.skipWhitespace()
 
@@ -96,37 +101,37 @@ proc nextToken(l : var Lexer): token.Token =
   l.readChar()
   return tok
 
-
-
 proc peekChar(l : var Lexer): byte =
   if l.readPosition >= len(l.input):
     return 0
   else:
-    return l.input[l.readPosition]
+    return byte(l.input[l.readPosition])
 
 proc readIdentifier(l : var Lexer): string =
   let position = l.position
   while isLetter(l.ch):
     l.readChar()
-  return l.input[position:l.position]
+  return l.input[position .. l.position]
 
 
 proc readNumber(l : var Lexer): string =
   let position = l.position
   while isDigit(l.ch):
     l.readChar()
-  return l.input[position:l.position]
+  return l.input[position .. l.position]
 
-proc isLetter(ch :byte): bool =
-  return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+proc isLetter(b :byte): bool =
+  let ch = chr(b)
+  return 'a' <= ch and ch <= 'z' or 'A' <= ch and ch <= 'Z' or ch == '_'
 
 
-proc isDigit(ch :byte): bool =
+proc isDigit(b :byte): bool =
+  let ch = chr(b)
   return '0' <= char(ch) and char(ch) <= '9'
 
 
 proc newToken(tokenType :token.TokenType, ch :byte): token.Token =
-  return token.Token(Type: TokenType, Literal: $chr(ch))
+  return token.Token(Type: tokenType, Literal: $chr(ch))
 
 
 
