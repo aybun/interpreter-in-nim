@@ -53,21 +53,20 @@ type
 var keywords = {
   "fn" : FUNCTION,
   "let" : LET,
-  "false" : FALSE,
   "true" : TRUE,
   "false" : FALSE,
-  "IF" : IF,
+  "if" : IF,
   "else" : ELSE,
   "return" : RETURN,
 }.toTable()
 
 
-proc LookupIdent*(ident :string): string =
+proc LookupIdent*(ident :string):  TokenType=
   let res_string = keywords.getOrDefault(ident, "-")
   if res_string != "-":
     return res_string
   else:
-    return ident
+    return IDENT
 
 
 

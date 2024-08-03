@@ -5,7 +5,8 @@ import unittest
 
 suite "lexer":
   test "Test Next Token":
-    let input = """let five = 5;
+    let input = """
+    let five = 5;
     let ten = 10;
 
     let add = fn(x, y) {
@@ -46,12 +47,12 @@ suite "lexer":
       (token.COMMA, ","),
       (token.IDENT, "y"),
       (token.RPAREN, ")"),
-      (token.LBRACE, "("),
+      (token.LBRACE, "{"),
       (token.IDENT, "x"),
       (token.PLUS, "+"),
       (token.IDENT, "y"),
       (token.SEMICOLON, ";"),
-      (token.RBRACE, ")"),
+      (token.RBRACE, "}"),
       (token.SEMICOLON, ";"),
       (token.LET, "let"),
       (token.IDENT, "result"),
@@ -81,17 +82,17 @@ suite "lexer":
       (token.LT, "<"),
       (token.INT, "10"),
       (token.RPAREN, ")"),
-      (token.LBRACE, "("),
+      (token.LBRACE, "{"),
       (token.RETURN, "return"),
       (token.TRUE, "true"),
       (token.SEMICOLON, ";"),
-      (token.RBRACE, ")"),
+      (token.RBRACE, "}"),
       (token.ELSE, "else"),
-      (token.LBRACE, "("),
+      (token.LBRACE, "{"),
       (token.RETURN, "return"),
       (token.FALSE, "false"),
       (token.SEMICOLON, ";"),
-      (token.RBRACE, ")"),
+      (token.RBRACE, "}"),
       (token.INT, "10"),
       (token.EQ, "=="),
       (token.INT, "10"),
@@ -102,10 +103,10 @@ suite "lexer":
       (token.SEMICOLON, ";"),
       (token.EOF, ""),
     ]
-    echo input
+    #echo input
     var l = lexer.New(input)
-    let tok = l.nextToken()
     for i, tt in tests.pairs:
       let tok = l.nextToken()
+      #echo tok
       check(tok.Type == tt.expectedType)
       check(tok.Literal == tt.expectedLiteral)

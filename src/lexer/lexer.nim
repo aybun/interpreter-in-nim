@@ -20,13 +20,15 @@ proc readIdentifier(l : var Lexer): string
 proc readNumber(l : var Lexer): string
 
 proc New*(input :string): Lexer =
-  return Lexer(input: input)
+  var l = Lexer(input: input)
+  l.readChar()  # Why do I have to do this? To skip EOF?
+  return l
 
 proc readChar(l : var Lexer): void =
   if l.readPosition >= len(l.input):
     l.ch = 0
   else:
-    l.ch = byte(ord(l.input[l.readPosition]))
+    l.ch = byte(l.input[l.readPosition])
   l.position = l.readPosition
   l.readPosition += 1
 
@@ -111,14 +113,14 @@ proc readIdentifier(l : var Lexer): string =
   let position = l.position
   while isLetter(l.ch):
     l.readChar()
-  return l.input[position .. l.position]
+  return l.input[position .. l.position-1]
 
 
 proc readNumber(l : var Lexer): string =
   let position = l.position
   while isDigit(l.ch):
     l.readChar()
-  return l.input[position .. l.position]
+  return l.input[position .. l.position-1]
 
 proc isLetter(b :byte): bool =
   let ch = chr(b)
@@ -127,7 +129,7 @@ proc isLetter(b :byte): bool =
 
 proc isDigit(b :byte): bool =
   let ch = chr(b)
-  return '0' <= char(ch) and char(ch) <= '9'
+  return '0' <= ch and ch <= '9'
 
 
 proc newToken(tokenType :token.TokenType, ch :byte): token.Token =
