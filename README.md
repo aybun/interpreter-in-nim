@@ -4,5 +4,7 @@
 # References 
 Ball, T. (2018). Writing an Interpreter in Go. Germany: Thorsten Ball.
 
+# 📗Note 
+- This is a work-in-progress. 
 # Let's make him rich🔥🔥🔥
 https://interpreterbook.com/
