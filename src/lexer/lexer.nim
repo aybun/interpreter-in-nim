@@ -1,6 +1,5 @@
 
 import token/[token]
-#import unicode
 import strutils
 
 type
@@ -13,6 +12,7 @@ type
 # Define before use.
 proc peekChar(l : var Lexer): byte
 proc newToken(tokenType :token.TokenType, ch :byte): token.Token
+proc newToken(tokenType :TokenType, ch: char): Token #Refactor with template/macro
 proc isLetter(b :byte): bool
 proc isDigit(b :byte): bool
 proc readChar(l : var Lexer): void
@@ -135,5 +135,5 @@ proc isDigit(b :byte): bool =
 proc newToken(tokenType :token.TokenType, ch :byte): token.Token =
   return token.Token(Type: tokenType, Literal: $chr(ch))
 
-
-
+proc newToken(tokenType :TokenType, ch: char): Token =
+  return Token(Type: tokenType, Literal: ch)
