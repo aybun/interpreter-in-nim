@@ -4,6 +4,9 @@
 # References 
 Ball, T. (2018). Writing an Interpreter in Go. Germany: Thorsten Ball.
 
+# Development
+## Testing
+We use [testament](https://nim-lang.org/docs/testament.html) to run test.
 # 📗Note 
 - This is a work-in-progress. 
 # Let's make him rich🔥🔥🔥
