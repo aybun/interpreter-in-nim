@@ -132,8 +132,10 @@ proc isDigit(b :byte): bool =
   return '0' <= ch and ch <= '9'
 
 
+# Add multiple interfaces for newToken
 proc newToken(tokenType :token.TokenType, ch :byte): token.Token =
-  return token.Token(Type: tokenType, Literal: $chr(ch))
+  return token.Token(Type: tokenType, Literal: $chr(ch)) #byte -> char -> string
 
 proc newToken(tokenType :TokenType, ch: char): Token =
-  return Token(Type: tokenType, Literal: ch)
+  return Token(Type: tokenType, Literal: cast[string](ch))
+

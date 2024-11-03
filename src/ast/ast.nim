@@ -1,31 +1,31 @@
-
+# {.reorder: on.}
 import streams
 import options
 
 import token/[token]
 
 type
-  Node = concept n
-    n.TokenLiteral() is string
-    n.String() is string
+  Node = ref object of RootObj
+
+func TokenLiteral(self: Node): string=
+  return ""
 
 type
   Statement = ref object of Node
 
 func statementNode(s: Statement): void
+func String(s:Statement): string=
+  return ""
+
 
 
 type
   Expression = ref object of Node
-
 func statementExpression(e : Expression): void
 
-
 type
-  Program = ref object
+  Program = ref object of Node
     Statements : seq[Statement]
-
-
 
 func TokenLiteral(p: Program): string =
   if len(p.Statements) > 0:
@@ -33,7 +33,7 @@ func TokenLiteral(p: Program): string =
   else:
     return ""
 
-func String(p: Program): string =
+proc String(p: Program): string =
 
   var ss = newStringStream()
 
@@ -45,9 +45,22 @@ func String(p: Program): string =
 
   return out_str
 
+type
+  Identifier = ref object of Node
+    Token: token.Token
+    Value: string
+
+func expressionNode(i: Identifier):void =
+  return
+
+func TokenLiteral(i: Identifier): string=
+  return i.Token.Literal
+
+func String(i: Identifier): string=
+  return i.Value
 
 type
-  LetStatement = ref object
+  LetStatement = ref object of Statement
     Token: token.Token
     Name : Identifier
     Value: Expression
@@ -61,7 +74,7 @@ func TokenLiteral(ls: LetStatement): string =
 func String(ls: LetStatement): string =
   var ss = newStringStream()
 
-  ss.write(ls.TokenLiteral() + " ")
+  ss.write(ls.TokenLiteral() & " ")
   ss.write(ls.Name.String(ls.Name.String()))
 
   if not ls.Value.isNone:
@@ -75,7 +88,7 @@ func String(ls: LetStatement): string =
   return out_str
 
 type
-  returnStatement = ref object
+  ReturnStatement = ref object of Node
     Token: token.Token
     ReturnValue: Expression
 
@@ -102,7 +115,7 @@ func String(rs: ReturnStatement): string =
 
 
 type
-  ExpressionStatement = ref object
+  ExpressionStatement = ref object of Node
     Token: token.Token
     Expression: Expression
 
@@ -121,7 +134,7 @@ func String(es: ExpressionStatement): string=
 
 
 type
-  BlockStatement = ref object
+  BlockStatement = ref object of Statement
     Token: token.Token
     Statements: seq[Statement]
 
@@ -140,25 +153,12 @@ func String(bs: BlockStatement): string=
 
   let out_str = ss.readAll()
   ss.close()
-  return out
+  return out_str
 
 
-type
-  Identifier = object
-    Token: token.Token
-    Value: string
-
-func expressionNode(i: Identifier):void =
-  return
-
-func TokenLiteral(i: Identifier): string=
-  return i.Token.Literal
-
-func String(i: Identifier): string=
-  return i.Value
 
 type
-  Boolean = object
+  Boolean = ref object of Node
     Token: token.Token
     Value: bool
 
@@ -172,7 +172,7 @@ func String(b: Boolean): string=
   return b.Token.Literal
 
 type
-  IntegerLiteral = object
+  IntegerLiteral = ref object of Node
     Token: token.Token
     Value: int64
 func expressionNode(il: IntegerLiteral): void=
@@ -182,9 +182,8 @@ func TokenLiteral(il: IntegerLiteral): string=
 func String(il: IntegerLiteral): string=
   return il.Token.Literal
 
-
 type
-  PrefixExpression = ref object
+  PrefixExpression = ref object of Node
     Token: token.Token
     Operator: string
     Right: Expression
@@ -207,7 +206,7 @@ func String(pe: PrefixExpression): string=
 
 
 type
-  InfixExpression = ref object
+  InfixExpression = ref object of Node
     Token: token.Token
     Left: Expression
     Operator: string
@@ -231,7 +230,7 @@ func String(oe: IfExpression): string=
   return out_str
 
 type
-  IfExpression = ref object
+  IfExpression = ref object of Node
     Token: token.Token
     Condition: Expression
     Consequence: BlockStatement
@@ -242,6 +241,7 @@ func expressionNode(ie: IfExpression): void=
 
 func TokenLiteral(ie: IfExpression): void=
   return ie.Token.Literal
+
 func String(ie: IfExpression): string=
   var ss = newStringStream()
 
@@ -258,10 +258,8 @@ func String(ie: IfExpression): string=
   ss.close()
   return out_str
 
-
-
 type
-  FunctionLiteral = ref object
+  FunctionLiteral = ref object of Node
     Token: token.Token
     Parameters: seq[Identifier]
     Body: BlockStatement
@@ -290,7 +288,7 @@ func String(fl: FunctionLiteral): string=
 
 
 type
-  CallExpression = ref object
+  CallExpression = ref object of Node
     Token: token.Token
     Function: Expression
     Arguments: ref seq[Expression]
