@@ -18,7 +18,7 @@ const
  
 
 type
-    Obj = ref object of RootObj
+    Obj* = ref object of RootObj
 
 proc Type(obj: Obj): ObjType = 
     ""
@@ -72,6 +72,7 @@ type
 proc Type(e: Error): ObjType = return ERROR_OBJ
 proc Instpect(e: Errof): string = return "ERROR: " + e.Message 
 
+import obj/environment # Very Strange!!!
 
 type
     Function = ref object of Obj
