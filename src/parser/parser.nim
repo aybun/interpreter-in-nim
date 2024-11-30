@@ -84,7 +84,7 @@ proc nextToken(p: Parser): void =
 
 
 
-proc CurTokenIs(p: Parser, t : token.TokenType): bool = 
+proc curTokenIs(p: Parser, t : token.TokenType): bool = 
     return p.curToken.Type == t 
 
 proc peekTokenIs(p: Parser, t token.TokenType): bool =
@@ -120,15 +120,13 @@ proc ParseProgram(p: Parser): ast.Program =
     program.Statements = newSeq[ast.Statement]()
 
     while !p.curTokenIs(token.EOF):
-        let stmt = p.parseStatement()
-        if stmt != nil:
-            program.Statements = program.Statements.append(stmt)
+        var statement = p.parseStatement()
+        if statement != nil:
+            program.Statements.add(statement)
 
-        
         p.nextToken()
     
     return program
-
 
 proc parseStatement(p: Parser) ast.Statement =
     case p.curToken.Type:
@@ -274,6 +272,7 @@ proc parsePrefixExpression(p: Parser): ast.Expression =
     return expression
 
 # Why doe we assume that the left is already parsed?
+# Where is this function called?
 proc parseInfixExpression(p: Parser, left: ast.Expression): ast.Expression =
     var expression = ast.InfixExpression(
         Token: p.curToken,
