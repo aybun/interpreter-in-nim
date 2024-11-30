@@ -35,7 +35,7 @@ proc Type(integer: Integer): ObjType =
     return INTEGER_OBJ
 
 proc Inspect(integer: Integer): string =
-    return "%d" % [integer.Value]
+    return &"{integer.Value}"
 
 # Boolean
 type 
@@ -46,7 +46,7 @@ proc Type(boolean: Boolean): ObjType =
     return BOOLEAN_OBJ
 
 proc Inspect(boolean: Boolean) string =
-    return "%t" % [boolean.Value]
+    return &"{boolean.Value}"
 
 # Null
 type
