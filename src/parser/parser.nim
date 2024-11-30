@@ -188,10 +188,11 @@ proc parseExpressionStatement(p: Parser): ast.ExpressionStatement =
     return stmt
 
 
-# How does it work???
+# Q : How does it work???
+# A : First, we assume that it is an infix expression. It it turns out not to be we just return that. 
 proc parseExpression(p: Parser, precedence: Precedence) ast.Expression =
 
-    let prefix = p.prefixParseFns[p.curToken.Type]
+    var prefix = p.prefixParseFns[p.curToken.Type]
 
     if prefix == nil:
         p.noPrefixParseFnError(p.curToken.Type)
@@ -201,16 +202,21 @@ proc parseExpression(p: Parser, precedence: Precedence) ast.Expression =
 
     # Why do we need this?
     while !p.peekTokenIs(token.SEMICOLON) and precedence < p.peekPrecedence():
-        let infix = p.infixParseFns[p.peekToken.Type]
+        var infix = p.infixParseFns.getOrDefault(p.peekToken.Type, nil)
 
         if infix == nil:
             return leftExp
 
         p.nextToken()
 
+        # Recursively evaluate the expression.
+        # The left side is first evaluated by prefix().
+        # Think about this expression : a + b + c     
         leftExp = infix(leftExp)
-    
-    return leftExp
+
+    # The return value should just be named result.
+    # result = leftExp
+    return leftExp 
 
 proc peekPrecedence(p: Parser): Precedence =
 
@@ -233,13 +239,6 @@ proc curPrecedence(p: Parser): Precedence =
 proc parseIdentifier(p: Parser): ast.Expression = 
     return ast.Identifier(Token: p.curToken, Value: p.curToken.Literal)
 
-
-proc safeParseInt(s: string): int =
-  try:
-    result = parseInt(s.strip())
-  except ValueError:
-    echo "Error: Invalid integer format"
-    result = 0
 
 proc parseIntegerLiteral(p: Parser): ast.Expression =
 
@@ -271,8 +270,10 @@ proc parsePrefixExpression(p: Parser): ast.Expression =
 
     return expression
 
-# Why doe we assume that the left is already parsed?
-# Where is this function called?
+# Q : Why doe we assume that the left is already parsed?
+# A : Read parseExpression
+# Q : Where is this function called?
+# A : It is bound by the Parser.registerInfix function.
 proc parseInfixExpression(p: Parser, left: ast.Expression): ast.Expression =
     var expression = ast.InfixExpression(
         Token: p.curToken,
