@@ -31,8 +31,8 @@ var precedences = {
 
 
 type 
-    prefixParseFn = proc(): ast.Expression
-    infixParseFn = proc(e: ast.Expression): ast.Expression
+    prefixParseFn = proc(p: Parser): ast.Expression
+    infixParseFn = proc(p: Parser, e: ast.Expression): ast.Expression
 
 type
     Parser = ref object of RootObj
@@ -49,27 +49,27 @@ type
     p = Parser(l: l, errors: newSeq[string]())
 
     p.prefixParseFns = initTable[token.TokenType, prefixParseFn]()
-	p.registerPrefix(token.IDENT, p.parseIdentifier)
-	p.registerPrefix(token.INT, p.parseIntegerLiteral)
-	p.registerPrefix(token.BANG, p.parsePrefixExpression)
-	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
-	p.registerPrefix(token.TRUE, p.parseBoolean)
-	p.registerPrefix(token.FALSE, p.parseBoolean)
-	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
-	p.registerPrefix(token.IF, p.parseIfExpression)
-	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
+	p.registerPrefix(token.IDENT, parseIdentifier)
+	p.registerPrefix(token.INT, parseIntegerLiteral)
+	p.registerPrefix(token.BANG, parsePrefixExpression)
+	p.registerPrefix(token.MINUS, parsePrefixExpression)
+	p.registerPrefix(token.TRUE, parseBoolean)
+	p.registerPrefix(token.FALSE, parseBoolean)
+	p.registerPrefix(token.LPAREN, parseGroupedExpression)
+	p.registerPrefix(token.IF, parseIfExpression)
+	p.registerPrefix(token.FUNCTION, parseFunctionLiteral)
 
     p.infixParseFns = initTable[token.TokenType, prefixParseFn]()
-	p.registerInfix(token.PLUS, p.parseInfixExpression)
-	p.registerInfix(token.MINUS, p.parseInfixExpression)
-	p.registerInfix(token.SLASH, p.parseInfixExpression)
-	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
-	p.registerInfix(token.EQ, p.parseInfixExpression)
-	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
-	p.registerInfix(token.LT, p.parseInfixExpression)
-	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerInfix(token.PLUS, parseInfixExpression)
+	p.registerInfix(token.MINUS, parseInfixExpression)
+	p.registerInfix(token.SLASH, parseInfixExpression)
+	p.registerInfix(token.ASTERISK, parseInfixExpression)
+	p.registerInfix(token.EQ, parseInfixExpression)
+	p.registerInfix(token.NOT_EQ, parseInfixExpression)
+	p.registerInfix(token.LT, parseInfixExpression)
+	p.registerInfix(token.GT, parseInfixExpression)
 
-	p.registerInfix(token.LPAREN, p.parseCallExpression)
+	p.registerInfix(token.LPAREN, parseCallExpression)
 
 	# Read two tokens, so curToken and peekToken are both set
 	p.nextToken()
@@ -192,13 +192,13 @@ proc parseExpressionStatement(p: Parser): ast.ExpressionStatement =
 # A : First, we assume that it is an infix expression. It it turns out not to be we just return that. 
 proc parseExpression(p: Parser, precedence: Precedence) ast.Expression =
 
-    var prefix = p.prefixParseFns[p.curToken.Type]
+    var prefix = p.prefixParseFns.getOrDefault(p.curToken.Type, nil)
 
     if prefix == nil:
         p.noPrefixParseFnError(p.curToken.Type)
         return nil
     
-    var leftExp = prefix()
+    var leftExp = prefix(p:p)
 
     # Why do we need this?
     while !p.peekTokenIs(token.SEMICOLON) and precedence < p.peekPrecedence():
@@ -212,7 +212,7 @@ proc parseExpression(p: Parser, precedence: Precedence) ast.Expression =
         # Recursively evaluate the expression.
         # The left side is first evaluated by prefix().
         # Think about this expression : a + b + c     
-        leftExp = infix(leftExp)
+        leftExp = infix(p:p, e:leftExp)
 
     # The return value should just be named result.
     # result = leftExp
