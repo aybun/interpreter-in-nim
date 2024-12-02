@@ -1,3 +1,5 @@
+import unittest
+
 import std/strformat
 import sequtils
 
@@ -6,28 +8,27 @@ import ast/ast
 import token/token
 
 
-var letStatement = LetStatement(
-  Token: token.Token(Type:Token.LET, Literal:"let" ),
-  Name: Identifier(Token: token.Token(Type:Token.IDENT, Literal:"myVar"),
+var letStatement = ast.LetStatement(
+  Token: token.Token(Type:token.LET, Literal:"let" ),
+  Name: ast.Identifier(Token: token.Token(Type :token.IDENT, Literal:"myVar"),
                    Value: "myVar",
   ),
-  Value: Identifier(Token: token.Token(Type:token.IDENT, Literal:"anotherVar"),
+  Value: cast[ast.Expression](ast.Identifier(Token: token.Token(Type:token.IDENT, Literal:"anotherVar"),
                     Value: "anotherVar",
+    )
   ),
-
   )
-var statements: seq[LetStatement] = @[letStatement]
+var statements: seq[ast.Statement] = @[ cast[ast.Statement](letStatement) ]
 
-var program = Program(
+var program = ast.Program(
   Statements : statements
 )
-
-
 
 suite "ast":
   test "ast":
     var program_string = program.String()
-    # if program_strinng != "let myVar = anotherVar;":
-      # err_str = fmt"program.String() wrong. got={program_strinng}"
-
+    
     check(program_string == "let myVar = anotherVar;")
+    
+    if program_string != "let myVar = aotherVar;":
+      raise newException(ValueError, "Mesage : " & program_string)

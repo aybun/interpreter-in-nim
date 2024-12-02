@@ -1,4 +1,5 @@
-# {.reorder: on.}
+{.experimental: "codeReordering".}
+import strutils
 import streams
 import options
 
@@ -11,21 +12,24 @@ func TokenLiteral(self: Node): string=
   return ""
 
 type
-  Statement = ref object of Node
+  Statement* = ref object of Node
 
-func statementNode(s: Statement): void
+func statementNode(s: Statement): void=
+  return
+
 func String(s:Statement): string=
   return ""
 
 
 
 type
-  Expression = ref object of Node
-func statementExpression(e : Expression): void
+  Expression* = ref object of Node
+proc String*(e : Expression): string
+#func statementExpression(e : Expression): void
 
 type
-  Program = ref object of Node
-    Statements : seq[Statement]
+  Program* = ref object of Node
+    Statements* : seq[Statement]
 
 func TokenLiteral(p: Program): string =
   if len(p.Statements) > 0:
@@ -33,7 +37,7 @@ func TokenLiteral(p: Program): string =
   else:
     return ""
 
-proc String(p: Program): string =
+proc String*(p: Program): string =
 
   var ss = newStringStream()
 
@@ -46,9 +50,9 @@ proc String(p: Program): string =
   return out_str
 
 type
-  Identifier = ref object of Node
-    Token: token.Token
-    Value: string
+  Identifier* = ref object of Node
+    Token*: token.Token
+    Value*: string
 
 func expressionNode(i: Identifier):void =
   return
@@ -60,10 +64,10 @@ func String(i: Identifier): string=
   return i.Value
 
 type
-  LetStatement = ref object of Statement
-    Token: token.Token
-    Name : Identifier
-    Value: Expression
+  LetStatement* = ref object of Statement
+    Token*: token.Token
+    Name* : Identifier
+    Value*: Expression
 
 func statementNode(ls: LetStatement): void =
   return
@@ -71,14 +75,14 @@ func statementNode(ls: LetStatement): void =
 func TokenLiteral(ls: LetStatement): string =
   return ls.Token.Literal
 
-func String(ls: LetStatement): string =
+proc String(ls: LetStatement): string =
   var ss = newStringStream()
 
   ss.write(ls.TokenLiteral() & " ")
-  ss.write(ls.Name.String(ls.Name.String()))
+  ss.write(ls.Name.String())
 
-  if not ls.Value.isNone:
-    ss.write(ls.Value.String)
+  if ls.Value != nil:
+    ss.write(ls.Value.String())
 
   ss.write(";")
 
@@ -88,7 +92,7 @@ func String(ls: LetStatement): string =
   return out_str
 
 type
-  ReturnStatement = ref object of Node
+  ReturnStatement = ref object of Statement
     Token: token.Token
     ReturnValue: Expression
 
@@ -98,14 +102,14 @@ func statementNode(rs: ReturnStatement): void =
 func TokenLiteral(rs: ReturnStatement): string =
   return rs.Token.Literal
 
-func String(rs: ReturnStatement): string =
+proc String(rs: ReturnStatement): string =
 
   var ss = newStringStream()
 
-  ss.write(rs.TokenLiteral() + " ")
+  ss.write(rs.TokenLiteral() & " ")
 
-  if rs.ReturnValue is not nil:
-    rs.write(rs.ReturnValue.String())
+  if rs.ReturnValue != nil:
+    ss.write(rs.ReturnValue.String())
 
   ss.write(";")
 
@@ -115,7 +119,7 @@ func String(rs: ReturnStatement): string =
 
 
 type
-  ExpressionStatement = ref object of Node
+  ExpressionStatement = ref object of Statement
     Token: token.Token
     Expression: Expression
 
@@ -124,10 +128,10 @@ func statementNode(es: ExpressionStatement): void=
   return
 
 func TokenLiteral(es: ExpressionStatement): string=
-  return es.token.Literal
+  return es.Token.Literal
 
-func String(es: ExpressionStatement): string=
-  if ExpressionStatement is not nil:
+proc String(es: ExpressionStatement): string=
+  if es != nil:
     return es.Expression.String()
   else:
     return ""
@@ -144,11 +148,11 @@ func statementNode(bs: BlockStatement): void=
 func TokenLiteral(bs: BlockStatement): string=
   return bs.Token.Literal
 
-func String(bs: BlockStatement): string=
+proc String(bs: BlockStatement): string=
 
   var ss = newStringStream()
 
-  for bs in statements:
+  for bs in bs.Statements:
     ss.write(ss)
 
   let out_str = ss.readAll()
@@ -158,21 +162,21 @@ func String(bs: BlockStatement): string=
 
 
 type
-  Boolean = ref object of Node
+  Boolean = ref object of Expression
     Token: token.Token
     Value: bool
 
 func expressionNode(b: Boolean): void=
   return
 
-func TokenLiteral(b: Boolean): void=
+func TokenLiteral(b: Boolean): string=
   return b.Token.Literal
 
 func String(b: Boolean): string=
   return b.Token.Literal
 
 type
-  IntegerLiteral = ref object of Node
+  IntegerLiteral = ref object of Expression
     Token: token.Token
     Value: int64
 func expressionNode(il: IntegerLiteral): void=
@@ -183,16 +187,16 @@ func String(il: IntegerLiteral): string=
   return il.Token.Literal
 
 type
-  PrefixExpression = ref object of Node
+  PrefixExpression = ref object of Expression
     Token: token.Token
     Operator: string
     Right: Expression
 
 func expressionNode(pe: PrefixExpression): void=
   return
-func TokenLiteral(pe: PrefixExpression): void=
+func TokenLiteral(pe: PrefixExpression): string=
   return pe.Token.Literal
-func String(pe: PrefixExpression): string=
+proc String(pe: PrefixExpression): string=
   var ss = newStringStream()
 
   ss.write("(")
@@ -206,23 +210,23 @@ func String(pe: PrefixExpression): string=
 
 
 type
-  InfixExpression = ref object of Node
+  InfixExpression = ref object of Expression
     Token: token.Token
     Left: Expression
     Operator: string
     Right: Expression
 
-func expressionNode(oe: InfixExpression): void=
+func expressionNode(ie: InfixExpression): void=
   return
-func TokenLiteral(oe: InfixExpression): void=
+func TokenLiteral(ie: InfixExpression): string=
   return ie.Token.Literal
-func String(oe: IfExpression): string=
+proc String(ie: InfixExpression): string=
 
   var ss = newStringStream()
   ss.write("(")
-  ss.write(oe.Left.String())
-  ss.write(" " + oe.Operator + " ")
-  ss.write(oe.Right.String())
+  ss.write(ie.Left.String())
+  ss.write(" " & ie.Operator & " ")
+  ss.write(ie.Right.String())
   ss.write(")")
 
   let out_str = ss.readAll()
@@ -230,7 +234,7 @@ func String(oe: IfExpression): string=
   return out_str
 
 type
-  IfExpression = ref object of Node
+  IfExpression = ref object of Expression
     Token: token.Token
     Condition: Expression
     Consequence: BlockStatement
@@ -239,10 +243,10 @@ type
 func expressionNode(ie: IfExpression): void=
   return
 
-func TokenLiteral(ie: IfExpression): void=
+func TokenLiteral(ie: IfExpression): string=
   return ie.Token.Literal
 
-func String(ie: IfExpression): string=
+proc String(ie: IfExpression): string=
   var ss = newStringStream()
 
   ss.write("if")
@@ -250,16 +254,16 @@ func String(ie: IfExpression): string=
   ss.write(" ")
   ss.write(ie.Consequence.String())
 
-  if ie.Alternative:
+  if ie.Alternative != nil:
     ss.write("else ")
-    ss.write(ie.Alternative.string())
+    ss.write(ie.Alternative.String())
 
   let out_str = ss.readAll()
   ss.close()
   return out_str
 
 type
-  FunctionLiteral = ref object of Node
+  FunctionLiteral = ref object of Expression
     Token: token.Token
     Parameters: seq[Identifier]
     Body: BlockStatement
@@ -268,13 +272,13 @@ func expressionNode(fl: FunctionLiteral): void=
   return
 func TokenLiteral(fl: FunctionLiteral): string=
   return fl.Token.Literal
-func String(fl: FunctionLiteral): string=
+proc String(fl: FunctionLiteral): string=
   var ss = newStringStream()
 
   var params = newSeq[string]()
 
   for p in fl.Parameters:
-    params.append(p.String())
+    params.add(p.String())
 
   ss.write(fl.TokenLiteral())
   ss.write("(")
@@ -283,28 +287,28 @@ func String(fl: FunctionLiteral): string=
   ss.write(fl.Body.String())
 
   let out_str = ss.readAll()
-  ss.closed()
+  ss.close()
   return out_str
 
 
 type
-  CallExpression = ref object of Node
+  CallExpression = ref object of Expression
     Token: token.Token
     Function: Expression
-    Arguments: ref seq[Expression]
+    Arguments: seq[Expression]
 
 func expressionNode(ce: CallExpression): void=
   return
 func TokenLiteral(ce: CallExpression): string=
   return ce.Token.Literal
 
-func String(ce: CallExpression): string=
+proc String(ce: CallExpression): string=
   var ss = newStringStream()
 
-  var args = newSeq[string]
+  var args = newSeq[string]()
 
   for a in ce.Arguments:
-    args.append(a.String())
+    args.add(a.String())
 
   ss.write(ce.Function.String())
   ss.write("(")
@@ -314,3 +318,38 @@ func String(ce: CallExpression): string=
   let out_str = ss.readAll()
   ss.close()
   return out_str
+
+
+# This is a hacky solution!!!
+proc String*(e : Expression): string =
+
+  # let s = @[Boolean, IntegerLiteral, PrefixExpression, InfixExpression, IfExpression, FunctionLiteral, CallExpression  ]
+
+  # for expressionType in s:
+  #   if e of expressionType:
+  #     var casted = cast[expressionType](e)
+  #     return casted.String()
+
+  if e of Boolean:
+    var casted = cast[Boolean](e)
+    return casted.String()
+  elif e of IntegerLiteral:
+    var casted = cast[IntegerLiteral](e)
+    return casted.String()
+  elif e of PrefixExpression:
+    var casted = cast[PrefixExpression](e)
+    return casted.String()
+  elif e of InfixExpression:
+    var casted = cast[InfixExpression](e)
+    return casted.String()
+  elif e of IfExpression:
+    var casted = cast[IfExpression](e)
+    return casted.String()
+  elif e of FunctionLiteral:
+    var casted = cast[FunctionLiteral](e)
+    return casted.String()
+  elif e of CallExpression:
+    var casted = cast[CallExpression](e)
+    return casted.String()
+
+

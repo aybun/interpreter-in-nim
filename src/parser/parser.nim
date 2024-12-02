@@ -1,3 +1,5 @@
+{.experimental: "codeReordering".}
+
 import sequtils
 import strformat
 import strutils
