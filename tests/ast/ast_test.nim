@@ -28,8 +28,5 @@ suite "ast":
   test "ast":
     var program_string = program.String()
 
-    check(program_string is string) 
-    assert(program_string == "let myVar = anotherVar;")
+    check(program_string == "let myVar = anotherVar;")
     
-    # if program_string != "let myVar = aotherVar;":
-    #   raise newException(ValueError, "Mesage : " & program_string)

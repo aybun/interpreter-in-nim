@@ -3,7 +3,7 @@ import token/[token]
 import strutils
 
 type
-  Lexer = object
+  Lexer* = object
     input : string
     position : int
     readPosition : int

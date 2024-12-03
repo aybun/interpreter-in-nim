@@ -10,8 +10,8 @@ import token/[token]
 type
   Node = ref object of RootObj
 
-method TokenLiteral(self: Node): string {.base.} = "..."
-method String(self: Node): string {.base.} = "..."
+method TokenLiteral*(self: Node): string {.base.} = "..."
+method String*(self: Node): string {.base.} = "..."
 
 type
   Statement* = ref object of Node
@@ -23,7 +23,7 @@ method String*(s:Statement): string = "statement"
 
 type
   Expression* = ref object of Node
-method expressionNode(pe: Expression): void {.base.} = return 
+method expressionNode*(pe: Expression): void {.base.} = return 
 method TokenLiteral*(e:Expression): string = " "
 method String*(e : Expression): string = "Expression"
 
@@ -31,7 +31,7 @@ type
   Program* = ref object of Node
     Statements* : seq[Statement]
 
-method TokenLiteral(p: Program): string =
+method TokenLiteral*(p: Program): string =
   if len(p.Statements) > 0:
     return p.Statements[0].TokenLiteral()
   else:
@@ -53,11 +53,11 @@ type
     Token*: token.Token
     Value*: string
 
-method expressionNode(i: Identifier):void = return
+method expressionNode*(i: Identifier):void = return
 
-method TokenLiteral(i: Identifier): string = return i.Token.Literal
+method TokenLiteral*(i: Identifier): string = return i.Token.Literal
 
-method String(i: Identifier): string = return i.Value
+method String*(i: Identifier): string = return i.Value
 
 type
   LetStatement* = ref object of Statement
@@ -65,9 +65,9 @@ type
     Name* : Identifier
     Value*: Expression
 
-method statementNode(ls: LetStatement): void = return
-method TokenLiteral(ls: LetStatement): string = return ls.Token.Literal
-method String(ls: LetStatement): string =
+method statementNode*(ls: LetStatement): void = return
+method TokenLiteral*(ls: LetStatement): string = return ls.Token.Literal
+method String*(ls: LetStatement): string =
   var ss = newStringStream()
 
   ss.write(ls.TokenLiteral() & " ")
@@ -86,13 +86,13 @@ method String(ls: LetStatement): string =
   return out_str
 
 type
-  ReturnStatement = ref object of Statement
-    Token: token.Token
-    ReturnValue: Expression
+  ReturnStatement* = ref object of Statement
+    Token*: token.Token
+    ReturnValue*: Expression
 
-method statementNode(rs: ReturnStatement): void = return
-method TokenLiteral(rs: ReturnStatement): string = return rs.Token.Literal
-method String(rs: ReturnStatement): string =
+method statementNode*(rs: ReturnStatement): void = return
+method TokenLiteral*(rs: ReturnStatement): string = return rs.Token.Literal
+method String*(rs: ReturnStatement): string =
 
   var ss = newStringStream()
 
@@ -109,27 +109,27 @@ method String(rs: ReturnStatement): string =
   return out_str
 
 type
-  ExpressionStatement = ref object of Statement
-    Token: token.Token
-    Expression: Expression
+  ExpressionStatement* = ref object of Statement
+    Token*: token.Token
+    Expression*: Expression
 
 
-method statementNode(es: ExpressionStatement): void=return
-method TokenLiteral(es: ExpressionStatement): string = return es.Token.Literal
-method String(es: ExpressionStatement): string=
+method statementNode*(es: ExpressionStatement): void=return
+method TokenLiteral*(es: ExpressionStatement): string = return es.Token.Literal
+method String*(es: ExpressionStatement): string=
   if es != nil:
     return es.Expression.String()
   else:
     return ""
 
 type
-  BlockStatement = ref object of Statement
-    Token: token.Token
-    Statements: seq[Statement]
+  BlockStatement* = ref object of Statement
+    Token*: token.Token
+    Statements*: seq[Statement]
 
-method statementNode(bs: BlockStatement): void = return
-method TokenLiteral(bs: BlockStatement): string = return bs.Token.Literal
-method String(bs: BlockStatement): string =
+method statementNode*(bs: BlockStatement): void = return
+method TokenLiteral*(bs: BlockStatement): string = return bs.Token.Literal
+method String*(bs: BlockStatement): string =
 
   var ss = newStringStream()
 
@@ -144,31 +144,31 @@ method String(bs: BlockStatement): string =
 
 
 type
-  Boolean = ref object of Expression
-    Token: token.Token
-    Value: bool
+  Boolean* = ref object of Expression
+    Token*: token.Token
+    Value*: bool
 
-method expressionNode(b: Boolean): void = return
-method TokenLiteral(b: Boolean): string = return b.Token.Literal
-method String(b: Boolean): string = return b.Token.Literal
-
-type
-  IntegerLiteral = ref object of Expression
-    Token: token.Token
-    Value: int64
-method expressionNode(il: IntegerLiteral): void = return
-method TokenLiteral(il: IntegerLiteral): string = return il.Token.Literal
-method String(il: IntegerLiteral): string = return il.Token.Literal
+method expressionNode*(b: Boolean): void = return
+method TokenLiteral*(b: Boolean): string = return b.Token.Literal
+method String*(b: Boolean): string = return b.Token.Literal
 
 type
-  PrefixExpression = ref object of Expression
-    Token: token.Token
-    Operator: string
-    Right: Expression
+  IntegerLiteral* = ref object of Expression
+    Token*: token.Token
+    Value*: int64
+method expressionNode*(il: IntegerLiteral): void = return
+method TokenLiteral*(il: IntegerLiteral): string = return il.Token.Literal
+method String*(il: IntegerLiteral): string = return il.Token.Literal
 
-method expressionNode(pe: PrefixExpression): void = return
-method TokenLiteral(pe: PrefixExpression): string = return pe.Token.Literal
-method String(pe: PrefixExpression): string=
+type
+  PrefixExpression* = ref object of Expression
+    Token*: token.Token
+    Operator*: string
+    Right*: Expression
+
+method expressionNode*(pe: PrefixExpression): void = return
+method TokenLiteral*(pe: PrefixExpression): string = return pe.Token.Literal
+method String*(pe: PrefixExpression): string=
   var ss = newStringStream()
 
   ss.write("(")
@@ -183,15 +183,15 @@ method String(pe: PrefixExpression): string=
 
 
 type
-  InfixExpression = ref object of Expression
-    Token: token.Token
-    Left: Expression
-    Operator: string
-    Right: Expression
+  InfixExpression* = ref object of Expression
+    Token*: token.Token
+    Left*: Expression
+    Operator*: string
+    Right*: Expression
 
-method expressionNode(ie: InfixExpression): void = return
-method TokenLiteral(ie: InfixExpression): string = return ie.Token.Literal
-method String(ie: InfixExpression): string=
+method expressionNode*(ie: InfixExpression): void = return
+method TokenLiteral*(ie: InfixExpression): string = return ie.Token.Literal
+method String*(ie: InfixExpression): string=
 
   var ss = newStringStream()
   ss.write("(")
@@ -206,15 +206,15 @@ method String(ie: InfixExpression): string=
   return out_str
 
 type
-  IfExpression = ref object of Expression
-    Token: token.Token
-    Condition: Expression
-    Consequence: BlockStatement
-    Alternative: BlockStatement
+  IfExpression* = ref object of Expression
+    Token*: token.Token
+    Condition*: Expression
+    Consequence*: BlockStatement
+    Alternative*: BlockStatement
 
-method expressionNode(ie: IfExpression): void = return
-method TokenLiteral(ie: IfExpression): string = return ie.Token.Literal
-method String(ie: IfExpression): string=
+method expressionNode*(ie: IfExpression): void = return
+method TokenLiteral*(ie: IfExpression): string = return ie.Token.Literal
+method String*(ie: IfExpression): string=
   var ss = newStringStream()
 
   ss.write("if")
@@ -233,14 +233,14 @@ method String(ie: IfExpression): string=
   return out_str
 
 type
-  FunctionLiteral = ref object of Expression
-    Token: token.Token
-    Parameters: seq[Identifier]
-    Body: BlockStatement
+  FunctionLiteral* = ref object of Expression
+    Token*: token.Token
+    Parameters*: seq[Identifier]
+    Body*: BlockStatement
 
-method expressionNode(fl: FunctionLiteral): void = return
-method TokenLiteral(fl: FunctionLiteral): string = return fl.Token.Literal
-method String(fl: FunctionLiteral): string=
+method expressionNode*(fl: FunctionLiteral): void = return
+method TokenLiteral*(fl: FunctionLiteral): string = return fl.Token.Literal
+method String*(fl: FunctionLiteral): string=
   var ss = newStringStream()
 
   var params = newSeq[string]()
@@ -261,14 +261,14 @@ method String(fl: FunctionLiteral): string=
 
 
 type
-  CallExpression = ref object of Expression
-    Token: token.Token
-    Function: Expression
-    Arguments: seq[Expression]
+  CallExpression* = ref object of Expression
+    Token*: token.Token
+    Function*: Expression
+    Arguments*: seq[Expression]
 
-method expressionNode(ce: CallExpression): void = return
-method TokenLiteral(ce: CallExpression): string = return ce.Token.Literal
-method String(ce: CallExpression): string=
+method expressionNode*(ce: CallExpression): void = return
+method TokenLiteral*(ce: CallExpression): string = return ce.Token.Literal
+method String*(ce: CallExpression): string=
   var ss = newStringStream()
 
   var args = newSeq[string]()
@@ -285,4 +285,3 @@ method String(ce: CallExpression): string=
   let out_str = ss.readAll()
   ss.close()
   return out_str
-

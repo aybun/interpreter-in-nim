@@ -11,4 +11,4 @@ testresults
 tests/**/*.exe
 tests/lexer/lexer_test
 tests/ast/ast_test
-tetst/parser/parser_test
+tests/parser/parser_test
