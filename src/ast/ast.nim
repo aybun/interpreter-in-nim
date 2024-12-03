@@ -5,63 +5,59 @@ import options
 
 import token/[token]
 
+
+## Use dynamic dispatch : proc -> method
 type
   Node = ref object of RootObj
 
-func TokenLiteral(self: Node): string=
-  return ""
+method TokenLiteral(self: Node): string {.base.} = "..."
+method String(self: Node): string {.base.} = "..."
 
 type
   Statement* = ref object of Node
 
-func statementNode(s: Statement): void=
-  return
-
-func String(s:Statement): string=
-  return ""
-
+method statementNode*(s: Statement): void {.base.}= return
+method TokenLiteral*(s:Statement): string = " "
+method String*(s:Statement): string = "statement"
 
 
 type
   Expression* = ref object of Node
-proc String*(e : Expression): string
-#func statementExpression(e : Expression): void
+method expressionNode(pe: Expression): void {.base.} = return 
+method TokenLiteral*(e:Expression): string = " "
+method String*(e : Expression): string = "Expression"
 
 type
   Program* = ref object of Node
     Statements* : seq[Statement]
 
-func TokenLiteral(p: Program): string =
+method TokenLiteral(p: Program): string =
   if len(p.Statements) > 0:
     return p.Statements[0].TokenLiteral()
   else:
     return ""
-
-proc String*(p: Program): string =
+method String*(p: Program): string =
 
   var ss = newStringStream()
 
   for st in p.Statements:
     ss.write(st.String())
-
+  
+  ss.setPosition(0)
   let out_str = ss.readAll()
   ss.close()
-
   return out_str
 
 type
-  Identifier* = ref object of Node
+  Identifier* = ref object of Expression
     Token*: token.Token
     Value*: string
 
-func expressionNode(i: Identifier):void =
-  return
+method expressionNode(i: Identifier):void = return
 
-func TokenLiteral(i: Identifier): string=
-  return i.Token.Literal
+method TokenLiteral(i: Identifier): string = return i.Token.Literal
 
-func String(i: Identifier): string=
-  return i.Value
+method String(i: Identifier): string = return i.Value
 
 type
   LetStatement* = ref object of Statement
@@ -69,26 +65,24 @@ type
     Name* : Identifier
     Value*: Expression
 
-func statementNode(ls: LetStatement): void =
-  return
-
-func TokenLiteral(ls: LetStatement): string =
-  return ls.Token.Literal
-
-proc String(ls: LetStatement): string =
+method statementNode(ls: LetStatement): void = return
+method TokenLiteral(ls: LetStatement): string = return ls.Token.Literal
+method String(ls: LetStatement): string =
   var ss = newStringStream()
 
   ss.write(ls.TokenLiteral() & " ")
   ss.write(ls.Name.String())
+  ss.write( " = " )
 
   if ls.Value != nil:
     ss.write(ls.Value.String())
 
   ss.write(";")
 
+  ss.setPosition(0)
   let out_str = ss.readAll()
-  ss.close()
 
+  ss.close()
   return out_str
 
 type
@@ -96,13 +90,9 @@ type
     Token: token.Token
     ReturnValue: Expression
 
-func statementNode(rs: ReturnStatement): void =
-  return
-
-func TokenLiteral(rs: ReturnStatement): string =
-  return rs.Token.Literal
-
-proc String(rs: ReturnStatement): string =
+method statementNode(rs: ReturnStatement): void = return
+method TokenLiteral(rs: ReturnStatement): string = return rs.Token.Literal
+method String(rs: ReturnStatement): string =
 
   var ss = newStringStream()
 
@@ -113,10 +103,10 @@ proc String(rs: ReturnStatement): string =
 
   ss.write(";")
 
+  ss.setPosition(0)
   let out_str = ss.readAll()
   ss.close()
   return out_str
-
 
 type
   ExpressionStatement = ref object of Statement
@@ -124,37 +114,29 @@ type
     Expression: Expression
 
 
-func statementNode(es: ExpressionStatement): void=
-  return
-
-func TokenLiteral(es: ExpressionStatement): string=
-  return es.Token.Literal
-
-proc String(es: ExpressionStatement): string=
+method statementNode(es: ExpressionStatement): void=return
+method TokenLiteral(es: ExpressionStatement): string = return es.Token.Literal
+method String(es: ExpressionStatement): string=
   if es != nil:
     return es.Expression.String()
   else:
     return ""
-
 
 type
   BlockStatement = ref object of Statement
     Token: token.Token
     Statements: seq[Statement]
 
-func statementNode(bs: BlockStatement): void=
-  return
-
-func TokenLiteral(bs: BlockStatement): string=
-  return bs.Token.Literal
-
-proc String(bs: BlockStatement): string=
+method statementNode(bs: BlockStatement): void = return
+method TokenLiteral(bs: BlockStatement): string = return bs.Token.Literal
+method String(bs: BlockStatement): string =
 
   var ss = newStringStream()
 
   for bs in bs.Statements:
     ss.write(ss)
 
+  ss.setPosition(0)
   let out_str = ss.readAll()
   ss.close()
   return out_str
@@ -166,25 +148,17 @@ type
     Token: token.Token
     Value: bool
 
-func expressionNode(b: Boolean): void=
-  return
-
-func TokenLiteral(b: Boolean): string=
-  return b.Token.Literal
-
-func String(b: Boolean): string=
-  return b.Token.Literal
+method expressionNode(b: Boolean): void = return
+method TokenLiteral(b: Boolean): string = return b.Token.Literal
+method String(b: Boolean): string = return b.Token.Literal
 
 type
   IntegerLiteral = ref object of Expression
     Token: token.Token
     Value: int64
-func expressionNode(il: IntegerLiteral): void=
-  return
-func TokenLiteral(il: IntegerLiteral): string=
-  return il.Token.Literal
-func String(il: IntegerLiteral): string=
-  return il.Token.Literal
+method expressionNode(il: IntegerLiteral): void = return
+method TokenLiteral(il: IntegerLiteral): string = return il.Token.Literal
+method String(il: IntegerLiteral): string = return il.Token.Literal
 
 type
   PrefixExpression = ref object of Expression
@@ -192,11 +166,9 @@ type
     Operator: string
     Right: Expression
 
-func expressionNode(pe: PrefixExpression): void=
-  return
-func TokenLiteral(pe: PrefixExpression): string=
-  return pe.Token.Literal
-proc String(pe: PrefixExpression): string=
+method expressionNode(pe: PrefixExpression): void = return
+method TokenLiteral(pe: PrefixExpression): string = return pe.Token.Literal
+method String(pe: PrefixExpression): string=
   var ss = newStringStream()
 
   ss.write("(")
@@ -204,6 +176,7 @@ proc String(pe: PrefixExpression): string=
   ss.write(pe.Right.String())
   ss.write(")")
 
+  ss.setPosition(0)
   let out_str = ss.readAll()
   ss.close()
   return out_str
@@ -216,11 +189,9 @@ type
     Operator: string
     Right: Expression
 
-func expressionNode(ie: InfixExpression): void=
-  return
-func TokenLiteral(ie: InfixExpression): string=
-  return ie.Token.Literal
-proc String(ie: InfixExpression): string=
+method expressionNode(ie: InfixExpression): void = return
+method TokenLiteral(ie: InfixExpression): string = return ie.Token.Literal
+method String(ie: InfixExpression): string=
 
   var ss = newStringStream()
   ss.write("(")
@@ -229,6 +200,7 @@ proc String(ie: InfixExpression): string=
   ss.write(ie.Right.String())
   ss.write(")")
 
+  ss.setPosition(0)
   let out_str = ss.readAll()
   ss.close()
   return out_str
@@ -240,13 +212,9 @@ type
     Consequence: BlockStatement
     Alternative: BlockStatement
 
-func expressionNode(ie: IfExpression): void=
-  return
-
-func TokenLiteral(ie: IfExpression): string=
-  return ie.Token.Literal
-
-proc String(ie: IfExpression): string=
+method expressionNode(ie: IfExpression): void = return
+method TokenLiteral(ie: IfExpression): string = return ie.Token.Literal
+method String(ie: IfExpression): string=
   var ss = newStringStream()
 
   ss.write("if")
@@ -258,6 +226,8 @@ proc String(ie: IfExpression): string=
     ss.write("else ")
     ss.write(ie.Alternative.String())
 
+
+  ss.setPosition(0)
   let out_str = ss.readAll()
   ss.close()
   return out_str
@@ -268,11 +238,9 @@ type
     Parameters: seq[Identifier]
     Body: BlockStatement
 
-func expressionNode(fl: FunctionLiteral): void=
-  return
-func TokenLiteral(fl: FunctionLiteral): string=
-  return fl.Token.Literal
-proc String(fl: FunctionLiteral): string=
+method expressionNode(fl: FunctionLiteral): void = return
+method TokenLiteral(fl: FunctionLiteral): string = return fl.Token.Literal
+method String(fl: FunctionLiteral): string=
   var ss = newStringStream()
 
   var params = newSeq[string]()
@@ -286,6 +254,7 @@ proc String(fl: FunctionLiteral): string=
   ss.write(") ")
   ss.write(fl.Body.String())
 
+  ss.setPosition(0)
   let out_str = ss.readAll()
   ss.close()
   return out_str
@@ -297,12 +266,9 @@ type
     Function: Expression
     Arguments: seq[Expression]
 
-func expressionNode(ce: CallExpression): void=
-  return
-func TokenLiteral(ce: CallExpression): string=
-  return ce.Token.Literal
-
-proc String(ce: CallExpression): string=
+method expressionNode(ce: CallExpression): void = return
+method TokenLiteral(ce: CallExpression): string = return ce.Token.Literal
+method String(ce: CallExpression): string=
   var ss = newStringStream()
 
   var args = newSeq[string]()
@@ -315,41 +281,8 @@ proc String(ce: CallExpression): string=
   ss.write(args.join(", "))
   ss.write(")")
 
+  ss.setPosition(0)
   let out_str = ss.readAll()
   ss.close()
   return out_str
-
-
-# This is a hacky solution!!!
-proc String*(e : Expression): string =
-
-  # let s = @[Boolean, IntegerLiteral, PrefixExpression, InfixExpression, IfExpression, FunctionLiteral, CallExpression  ]
-
-  # for expressionType in s:
-  #   if e of expressionType:
-  #     var casted = cast[expressionType](e)
-  #     return casted.String()
-
-  if e of Boolean:
-    var casted = cast[Boolean](e)
-    return casted.String()
-  elif e of IntegerLiteral:
-    var casted = cast[IntegerLiteral](e)
-    return casted.String()
-  elif e of PrefixExpression:
-    var casted = cast[PrefixExpression](e)
-    return casted.String()
-  elif e of InfixExpression:
-    var casted = cast[InfixExpression](e)
-    return casted.String()
-  elif e of IfExpression:
-    var casted = cast[IfExpression](e)
-    return casted.String()
-  elif e of FunctionLiteral:
-    var casted = cast[FunctionLiteral](e)
-    return casted.String()
-  elif e of CallExpression:
-    var casted = cast[CallExpression](e)
-    return casted.String()
-
 

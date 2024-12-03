@@ -13,12 +13,12 @@ var letStatement = ast.LetStatement(
   Name: ast.Identifier(Token: token.Token(Type :token.IDENT, Literal:"myVar"),
                    Value: "myVar",
   ),
-  Value: cast[ast.Expression](ast.Identifier(Token: token.Token(Type:token.IDENT, Literal:"anotherVar"),
+  Value: ast.Identifier(Token: token.Token(Type:token.IDENT, Literal:"anotherVar"),
                     Value: "anotherVar",
-    )
   ),
-  )
-var statements: seq[ast.Statement] = @[ cast[ast.Statement](letStatement) ]
+)
+var statements: seq[ast.Statement] = @[]
+statements.add(letStatement)
 
 var program = ast.Program(
   Statements : statements
@@ -27,8 +27,9 @@ var program = ast.Program(
 suite "ast":
   test "ast":
     var program_string = program.String()
+
+    check(program_string is string) 
+    assert(program_string == "let myVar = anotherVar;")
     
-    check(program_string == "let myVar = anotherVar;")
-    
-    if program_string != "let myVar = aotherVar;":
-      raise newException(ValueError, "Mesage : " & program_string)
+    # if program_string != "let myVar = aotherVar;":
+    #   raise newException(ValueError, "Mesage : " & program_string)
