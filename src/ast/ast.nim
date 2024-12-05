@@ -285,3 +285,12 @@ method String*(ce: CallExpression): string=
   let out_str = ss.readAll()
   ss.close()
   return out_str
+
+
+# Special Config
+# Now we assume that all integers will be converted to int64
+type
+  SupportedLiteral* = bool | int | int32 | int64 | string
+
+# type 
+#   suportedExpression = 
