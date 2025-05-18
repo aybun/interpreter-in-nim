@@ -1,5 +1,5 @@
 # Note
-    I recently found Racket. I think it suits the task better. On the way of turning into a lisper or schemer.
+    I recently found Racket. I think it suits the task better. This sets me on the way to becoming a lisper or schemer.
 
 # interpreter-in-nim
 - Following the tutorial literally is not optimal, so I decided to learn *Go*, *Nim* and the concept of *interpreters* at the same time, shooting 1 stone with 3 birds, basically.
